@@ -44,15 +44,16 @@
     </XUnitProject>
   </ItemGroup> -->
 
-  <ItemGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
-    <XUnitProject Include="$(RepoRoot)/test/EFCore.SqlServer.FunctionalTests/*.csproj">
-      <PreCommands>$(PreCommands); export Test__SqlServer__DefaultConnection="Data Source=localhost;;Database=master;;User=sa;;Password=Password12!;;Connect Timeout=60;;ConnectRetryCount=0"</PreCommands>
-    </XUnitProject>
-  </ItemGroup>
-
+  
   <PropertyGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
     <HelixTargetQueue>'$(HelixTargetQueue)'@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-helix-sqlserver-amd64-20201102145620-ae7e2e1</HelixTargetQueue>
   </PropertyGroup>
+  
+  <ItemGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
+    <XUnitProject Include="$(RepoRoot)/test/EFCore.CrossStore.FunctionalTests/*.csproj">
+      <PreCommands>$(PreCommands); echo $(HelixTargetQueue); export Test__SqlServer__DefaultConnection="Data Source=localhost;;Database=master;;User=sa;;Password=Password12!;;Connect Timeout=60;;ConnectRetryCount=0"</PreCommands>
+    </XUnitProject>
+  </ItemGroup>
 
   <PropertyGroup>
     <XUnitPublishTargetFramework>net5.0</XUnitPublishTargetFramework>
