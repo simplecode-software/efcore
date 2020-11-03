@@ -51,6 +51,10 @@
     </XUnitProject>
   </ItemGroup>
 
+  <PropertyGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
+    <HelixTargetQueue>'$(HelixTargetQueue)'@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-helix-sqlserver-amd64-20201102145620-ae7e2e1</HelixTargetQueue>
+  </PropertyGroup>
+
   <PropertyGroup>
     <XUnitPublishTargetFramework>net5.0</XUnitPublishTargetFramework>
     <XUnitRuntimeTargetFramework>netcoreapp2.0</XUnitRuntimeTargetFramework>
