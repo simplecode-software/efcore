@@ -2,7 +2,7 @@
   <PropertyGroup>
     <HelixType>test/product/</HelixType>
     <HelixBuild>$(BUILD_BUILDNUMBER)</HelixBuild>
-    <HelixTargetQueues>$(HelixTargetQueues)</HelixTargetQueues>
+    <HelixTargetQueues>Ubuntu.1804.Amd64.Open@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-helix-sqlserver-amd64-20201102145620-ae7e2e1</HelixTargetQueues>
     <Creator Condition = "'$(HelixAccessToken)' == ''">efcore</Creator>
     <HelixAccessToken>$(HelixAccessToken)</HelixAccessToken>
 
@@ -45,9 +45,9 @@
   </ItemGroup> -->
 
   
-  <PropertyGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
-    <HelixTargetQueues>$(HelixTargetQueue)@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-helix-sqlserver-amd64-20201102145620-ae7e2e1</HelixTargetQueues>
-  </PropertyGroup>
+  <!-- <PropertyGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
+    <HelixTargetQueues>Ubuntu.1804.Amd64.Open@mcr.microsoft.com/dotnet-buildtools/prereqs:ubuntu-18.04-helix-sqlserver-amd64-20201102145620-ae7e2e1</HelixTargetQueues>
+  </PropertyGroup> -->
   
   <ItemGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
     <XUnitProject Include="$(RepoRoot)/test/EFCore.CrossStore.FunctionalTests/*.csproj">
