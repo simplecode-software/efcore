@@ -25,14 +25,14 @@
     <HelixBuild>t001</HelixBuild>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <XUnitProject Include="$(RepoRoot)/test/**/*.csproj"/>
     <XUnitProject Remove="$(RepoRoot)/test/EFCore.Specification.Tests/*.csproj"/>
     <XUnitProject Remove="$(RepoRoot)/test/EFCore.Relational.Specification.Tests/*.csproj"/>
-  </ItemGroup>
+  </ItemGroup> -->
 
   <!-- Start LocalDb instance for test projects which uses SqlServer on windows -->
-  <ItemGroup Condition = "'$(HelixTargetQueue.StartsWith(`Windows`))'">
+  <!-- <ItemGroup Condition = "'$(HelixTargetQueue.StartsWith(`Windows`))'">
     <XUnitProject Update="$(RepoRoot)/test/EFCore.SqlServer.FunctionalTests/*.csproj">
       <PreCommands>$(PreCommands); SqlLocalDB start</PreCommands>
     </XUnitProject>
@@ -42,10 +42,10 @@
     <XUnitProject Update="$(RepoRoot)/test/EFCore.OData.FunctionalTests/*.csproj">
       <PreCommands>$(PreCommands); SqlLocalDB start</PreCommands>
     </XUnitProject>
-  </ItemGroup>
+  </ItemGroup> -->
 
   <ItemGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
-    <XUnitProject Update="$(RepoRoot)/test/EFCore.SqlServer.FunctionalTests/*.csproj">
+    <XUnitProject Include="$(RepoRoot)/test/EFCore.SqlServer.FunctionalTests/*.csproj">
       <PreCommands>$(PreCommands); export Test__SqlServer__DefaultConnection='"Data Source=localhost;Database=master;User=sa;Password=Password12!;Connect Timeout=60;ConnectRetryCount=0"'</PreCommands>
     </XUnitProject>
   </ItemGroup>
