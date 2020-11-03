@@ -46,7 +46,7 @@
 
   <ItemGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
     <XUnitProject Update="$(RepoRoot)/test/EFCore.SqlServer.FunctionalTests/*.csproj">
-      <PreCommands>$(PreCommands); export Test__SqlServer__DefaultConnection='Data Source=localhost;Database=master;User=sa;Password=Password12!;Connect Timeout=60;ConnectRetryCount=0'</PreCommands>
+      <PreCommands>$(PreCommands); export Test__SqlServer__DefaultConnection="Data Source=localhost;Database=master;User=sa;Password=Password12!;Connect Timeout=60;ConnectRetryCount=0"</PreCommands>
     </XUnitProject>
   </ItemGroup>
 
