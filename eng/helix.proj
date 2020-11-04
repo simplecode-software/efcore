@@ -51,7 +51,7 @@
   
   <ItemGroup Condition = "'$(HelixTargetQueue.StartsWith(`Ubuntu`))'">
     <XUnitProject Include="$(RepoRoot)/test/EFCore.CrossStore.FunctionalTests/*.csproj">
-      <PreCommands>$(PreCommands); echo $(HelixTargetQueue); export Test__SqlServer__DefaultConnection="Data Source=localhost;;Database=master;;User=sa;;Password=$(MSSQL_SA_PASSWORD);;Connect Timeout=60;;ConnectRetryCount=0"</PreCommands>
+      <PreCommands>$(PreCommands); echo $(HelixTargetQueue); ps -aux; export Test__SqlServer__DefaultConnection="Data Source=localhost;;Database=master;;User=sa;;Password=$(MSSQL_SA_PASSWORD);;Connect Timeout=60;;ConnectRetryCount=0"</PreCommands>
     </XUnitProject>
   </ItemGroup>
 
