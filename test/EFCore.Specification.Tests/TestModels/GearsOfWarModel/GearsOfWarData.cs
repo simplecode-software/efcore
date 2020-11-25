@@ -36,6 +36,8 @@ namespace Microsoft.EntityFrameworkCore.TestModels.GearsOfWarModel
 
             WireUp(Squads, Missions, SquadMissions, Cities, Weapons, Tags, Gears, LocustLeaders, Factions, LocustHighCommands);
             WireUp2(LocustLeaders, Factions);
+
+            //ShadowPropertyMappings = CreateShadowPropertyMappings(Gears);
         }
 
         public virtual IQueryable<TEntity> Set<TEntity>()

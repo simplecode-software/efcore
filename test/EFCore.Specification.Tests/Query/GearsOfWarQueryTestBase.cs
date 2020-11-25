@@ -37,6 +37,10 @@ namespace Microsoft.EntityFrameworkCore.Query
         {
         }
 
+        protected override Expression RewriteExpectedQueryExpression(Expression expectedQueryExpression)
+            => new ExpectedQueryRewritingVisitor(Fixture.GetShadowPropertyMappings())
+                .Visit(expectedQueryExpression);
+
         [ConditionalTheory]
         [MemberData(nameof(IsAsyncData))]
         public virtual Task Negate_on_binary_expression(bool async)
@@ -7934,6 +7938,21 @@ namespace Microsoft.EntityFrameworkCore.Query
                                                  select t.IssueDate).FirstOrDefault()
                       where g.Tag.IssueDate > invalidTagIssueDate
                       select new { g.Nickname, invalidTagIssueDate });
+        }
+
+        [ConditionalTheory]
+        [MemberData(nameof(IsAsyncData))]
+        public virtual async Task Project_shadow_properties(bool async)
+        {
+            await AssertQuery(
+                async,
+                ss => from g in ss.Set<Gear>()
+                      select new
+                      {
+                          g.Nickname,
+                          AssignedCityName = EF.Property<string>(g, "AssignedCityName")
+                      },
+                elementSorter: e => e.Nickname);
         }
 
         protected GearsOfWarContext CreateContext()
