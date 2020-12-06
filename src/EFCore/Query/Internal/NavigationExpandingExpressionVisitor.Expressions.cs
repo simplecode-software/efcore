@@ -18,7 +18,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             public EntityReference(IEntityType entityType)
             {
                 EntityType = entityType;
-                IncludePaths = new IncludeTreeNode(entityType, this);
+                IncludePaths = new IncludeTreeNode(entityType, this, setLoaded: true);
             }
 
             public IEntityType EntityType { get; }
@@ -29,7 +29,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             public bool IsOptional { get; private set; }
             public IncludeTreeNode IncludePaths { get; private set; }
             public IncludeTreeNode LastIncludeTreeNode { get; private set; }
-            public bool SetLoaded { get; private set; } = true;
 
             public override ExpressionType NodeType
                 => ExpressionType.Extension;
@@ -57,9 +56,6 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
             public void MarkAsOptional()
                 => IsOptional = true;
-
-            public void SuppressSettingLoaded()
-                => SetLoaded = false;
 
             void IPrintableExpression.Print(ExpressionPrinter expressionPrinter)
             {
@@ -90,20 +86,23 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             private EntityReference _entityReference;
 
             public IncludeTreeNode(IEntityType entityType)
+                : this(entityType, null, setLoaded: true)
             {
-                EntityType = entityType;
             }
 
-            public IncludeTreeNode(IEntityType entityType, EntityReference entityReference)
+            public IncludeTreeNode(IEntityType entityType, EntityReference entityReference, bool setLoaded)
             {
                 EntityType = entityType;
                 _entityReference = entityReference;
+                SetLoaded = setLoaded;
             }
 
             public IEntityType EntityType { get; }
             public LambdaExpression FilterExpression { get; private set; }
 
-            public IncludeTreeNode AddNavigation(INavigationBase navigation)
+            public bool SetLoaded { get; }
+
+            public IncludeTreeNode AddNavigation(INavigationBase navigation, bool setLoaded)
             {
                 if (TryGetValue(navigation, out var existingValue))
                 {
@@ -131,7 +130,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
                 if (nodeToAdd == null)
                 {
-                    nodeToAdd = new IncludeTreeNode(navigation.TargetEntityType, null);
+                    nodeToAdd = new IncludeTreeNode(navigation.TargetEntityType, null, setLoaded);
                 }
 
                 this[navigation] = nodeToAdd;
@@ -141,7 +140,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
             public IncludeTreeNode Snapshot(EntityReference entityReference)
             {
-                var result = new IncludeTreeNode(EntityType, entityReference) { FilterExpression = FilterExpression };
+                var result = new IncludeTreeNode(EntityType, entityReference, SetLoaded) { FilterExpression = FilterExpression };
 
                 foreach (var kvp in this)
                 {
@@ -157,7 +156,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                 FilterExpression = includeTreeNode.FilterExpression;
                 foreach (var item in includeTreeNode)
                 {
-                    AddNavigation(item.Key).Merge(item.Value);
+                    AddNavigation(item.Key, item.Value.SetLoaded).Merge(item.Value);
                 }
             }
 
