@@ -43,6 +43,59 @@ ORDER BY [e].[Id], [t].[OneId], [t].[TwoId], [t].[Id], [t0].[OneId], [t0].[TwoId
         }
 
 
+        public override async Task Load_collection_using_Query_with_Include_for_inverse(bool async)
+        {
+            await base.Load_collection_using_Query_with_Include_for_inverse(async);
+
+            AssertSql(
+                @"@__p_0='3'
+
+SELECT [t].[Id], [t].[CollectionInverseId], [t].[Name], [t].[ReferenceInverseId], [e].[Id], [t].[EntityOneId], [t].[EntityTwoId], [t0].[EntityOneId], [t0].[EntityTwoId], [t0].[Id], [t0].[Name]
+FROM [EntityOnes] AS [e]
+INNER JOIN (
+    SELECT [e1].[Id], [e1].[CollectionInverseId], [e1].[Name], [e1].[ReferenceInverseId], [e0].[EntityOneId], [e0].[EntityTwoId]
+    FROM [EntityOneEntityTwo] AS [e0]
+    INNER JOIN [EntityTwos] AS [e1] ON [e0].[EntityTwoId] = [e1].[Id]
+) AS [t] ON [e].[Id] = [t].[EntityOneId]
+LEFT JOIN (
+    SELECT [e2].[EntityOneId], [e2].[EntityTwoId], [e3].[Id], [e3].[Name]
+    FROM [EntityOneEntityTwo] AS [e2]
+    INNER JOIN [EntityOnes] AS [e3] ON [e2].[EntityOneId] = [e3].[Id]
+    WHERE [e3].[Id] = @__p_0
+) AS [t0] ON [t].[Id] = [t0].[EntityTwoId]
+WHERE [e].[Id] = @__p_0
+ORDER BY [e].[Id], [t].[EntityOneId], [t].[EntityTwoId], [t].[Id], [t0].[EntityOneId], [t0].[EntityTwoId], [t0].[Id]");
+        }
+
+        public override async Task Load_collection_using_Query_with_Include_for_same_collection(bool async)
+        {
+            await base.Load_collection_using_Query_with_Include_for_same_collection(async);
+
+            AssertSql(
+                @"@__p_0='3'
+
+SELECT [t].[Id], [t].[CollectionInverseId], [t].[Name], [t].[ReferenceInverseId], [e].[Id], [t].[EntityOneId], [t].[EntityTwoId], [t1].[EntityOneId], [t1].[EntityTwoId], [t1].[Id], [t1].[Name], [t1].[EntityOneId0], [t1].[EntityTwoId0], [t1].[Id0], [t1].[CollectionInverseId], [t1].[Name0], [t1].[ReferenceInverseId]
+FROM [EntityOnes] AS [e]
+INNER JOIN (
+    SELECT [e1].[Id], [e1].[CollectionInverseId], [e1].[Name], [e1].[ReferenceInverseId], [e0].[EntityOneId], [e0].[EntityTwoId]
+    FROM [EntityOneEntityTwo] AS [e0]
+    INNER JOIN [EntityTwos] AS [e1] ON [e0].[EntityTwoId] = [e1].[Id]
+) AS [t] ON [e].[Id] = [t].[EntityOneId]
+LEFT JOIN (
+    SELECT [e2].[EntityOneId], [e2].[EntityTwoId], [e3].[Id], [e3].[Name], [t0].[EntityOneId] AS [EntityOneId0], [t0].[EntityTwoId] AS [EntityTwoId0], [t0].[Id] AS [Id0], [t0].[CollectionInverseId], [t0].[Name] AS [Name0], [t0].[ReferenceInverseId]
+    FROM [EntityOneEntityTwo] AS [e2]
+    INNER JOIN [EntityOnes] AS [e3] ON [e2].[EntityOneId] = [e3].[Id]
+    LEFT JOIN (
+        SELECT [e4].[EntityOneId], [e4].[EntityTwoId], [e5].[Id], [e5].[CollectionInverseId], [e5].[Name], [e5].[ReferenceInverseId]
+        FROM [EntityOneEntityTwo] AS [e4]
+        INNER JOIN [EntityTwos] AS [e5] ON [e4].[EntityTwoId] = [e5].[Id]
+    ) AS [t0] ON [e3].[Id] = [t0].[EntityOneId]
+    WHERE [e3].[Id] = @__p_0
+) AS [t1] ON [t].[Id] = [t1].[EntityTwoId]
+WHERE [e].[Id] = @__p_0
+ORDER BY [e].[Id], [t].[EntityOneId], [t].[EntityTwoId], [t].[Id], [t1].[EntityOneId], [t1].[EntityTwoId], [t1].[Id], [t1].[EntityOneId0], [t1].[EntityTwoId0], [t1].[Id0]");
+        }
+
         public override async Task Load_collection_using_Query_with_Include(bool async)
         {
             await base.Load_collection_using_Query_with_Include(async);

@@ -99,13 +99,17 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
 
             public IEntityType EntityType { get; }
             public LambdaExpression FilterExpression { get; private set; }
-
-            public bool SetLoaded { get; }
+            public bool SetLoaded { get; private set; }
 
             public IncludeTreeNode AddNavigation(INavigationBase navigation, bool setLoaded)
             {
                 if (TryGetValue(navigation, out var existingValue))
                 {
+                    if (setLoaded && !existingValue.SetLoaded)
+                    {
+                        existingValue.SetLoaded = true;
+                    }
+
                     return existingValue;
                 }
 

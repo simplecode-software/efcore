@@ -822,6 +822,84 @@ namespace Microsoft.EntityFrameworkCore
         [ConditionalTheory]
         [InlineData(true)]
         [InlineData(false)]
+        public virtual async Task Load_collection_using_Query_with_Include_for_inverse(bool async)
+        {
+            using var context = Fixture.CreateContext();
+
+            var left = context.Set<EntityOne>().Find(3);
+
+            ClearLog();
+
+            var collectionEntry = context.Entry(left).Collection(e => e.TwoSkipShared);
+
+            Assert.False(collectionEntry.IsLoaded);
+
+            var queryable = collectionEntry.Query().Include(e => e.OneSkipShared);
+            var children = async
+                ? await queryable.ToListAsync()
+                : queryable.ToList();
+
+            Assert.False(collectionEntry.IsLoaded);
+            foreach (var entityTwo in left.TwoSkipShared)
+            {
+                Assert.True(context.Entry(entityTwo).Collection(e => e.OneSkipShared).IsLoaded);
+            }
+
+            RecordLog();
+            context.ChangeTracker.LazyLoadingEnabled = false;
+
+            Assert.Equal(3, left.TwoSkipShared.Count);
+            foreach (var right in left.TwoSkipShared)
+            {
+                Assert.Contains(left, right.OneSkipShared);
+            }
+
+            Assert.Equal(children, left.TwoSkipShared.ToList());
+            Assert.Equal(7, context.ChangeTracker.Entries().Count());
+        }
+
+        [ConditionalTheory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public virtual async Task Load_collection_using_Query_with_Include_for_same_collection(bool async)
+        {
+            using var context = Fixture.CreateContext();
+
+            var left = context.Set<EntityOne>().Find(3);
+
+            ClearLog();
+
+            var collectionEntry = context.Entry(left).Collection(e => e.TwoSkipShared);
+
+            Assert.False(collectionEntry.IsLoaded);
+
+            var queryable = collectionEntry.Query().Include(e => e.OneSkipShared).ThenInclude(e => e.TwoSkipShared);
+            var children = async
+                ? await queryable.ToListAsync()
+                : queryable.ToList();
+
+            Assert.True(collectionEntry.IsLoaded);
+            foreach (var entityTwo in left.TwoSkipShared)
+            {
+                Assert.True(context.Entry(entityTwo).Collection(e => e.OneSkipShared).IsLoaded);
+            }
+
+            RecordLog();
+            context.ChangeTracker.LazyLoadingEnabled = false;
+
+            Assert.Equal(3, left.TwoSkipShared.Count);
+            foreach (var right in left.TwoSkipShared)
+            {
+                Assert.Contains(left, right.OneSkipShared);
+            }
+
+            Assert.Equal(children, left.TwoSkipShared.ToList());
+            Assert.Equal(7, context.ChangeTracker.Entries().Count());
+        }
+
+        [ConditionalTheory]
+        [InlineData(true)]
+        [InlineData(false)]
         public virtual async Task Load_collection_using_Query_with_filtered_Include(bool async)
         {
             using var context = Fixture.CreateContext();
